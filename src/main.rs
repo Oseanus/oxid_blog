@@ -1,6 +1,4 @@
-use axum::{ extract::Query, response::Html, routing::get, Router };
-use rand::{ thread_rng, Rng };
-use serde::Deserialize;
+use axum::{ response::Html, routing::get, Router };
 use std::net::SocketAddr;
 
 #[tokio::main]
@@ -16,17 +14,8 @@ async fn main() {
         .unwrap();
 }
 
-// Deserialize need to be implmented to use with the Query extractor
-#[derive(Deserialize)]
-struct RangeParameters {
-    start: usize,
-    end: usize,
-}
-
-async fn handler(Query(range): Query<RangeParameters>) -> Html<String> {
-    // Generate a random number in range parsed from query.
-    let random_number = thread_rng().gen_range(range.start..range.end);
-
-    // Send response in html format.
-    Html(format!("<h1>Random Number: {}</h1>", random_number))
+async fn handler() -> Html<&'static str> {
+    // `std::include_str` macro can be used to include an utf-8 file as `&'static str` in compile
+    // time. This method is relative to current `main.rs` file.
+    Html(include_str!("../static/index.htm"))
 }
