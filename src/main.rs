@@ -10,8 +10,7 @@ async fn main() {
 
     // A closure or a function can be used as handler.
 
-    // || async {"Hello World!"} is the handler
-    let app = Router::new().route("/", get(|| async {"Hello World!"}));
+    let app = Router::new().route("/", get(handler));
 
     // Address that server will bind to
     let addr = SocketAddr::from(([127, 0, 0, 1], 3000));
@@ -22,4 +21,8 @@ async fn main() {
         .serve(app.into_make_service())
         .await
         .unwrap();
+}
+
+async fn handler() -> &'static str {
+    "Hello world!"
 }
