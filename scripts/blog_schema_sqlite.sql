@@ -29,13 +29,5 @@ CREATE TABLE sessions (
     otp_code_sent BOOLEAN NOT NULL DEFAULT false
 );
 
-CREATE TABLE posts (
-    id SERIAL PRIMARY KEY,
-    title VARCHAR NOT NULL,
-    created_at TIMSTAMPZ DEFAULT CURRENT_TIMESTAMP
-);
-
-INSERT INTO posts (title) VALUES ('SQLite NOW function');
-
 -- DROP TABLE users;
 -- DROP TABLE sessions;
