@@ -1,7 +1,9 @@
 extern crate mongodb;
 
-use axum::{ routing::get, Router , http::StatusCode};
-use mongodb::{ Client, options::ClientOptions, bson::{doc, Document}, Database };
+mod config;
+
+use axum::{ routing::get, Router };
+use mongodb::{ Client, options::ClientOptions, bson::{doc, Document} };
 use std::net::SocketAddr;
 
 async fn index() -> String {
@@ -10,7 +12,10 @@ async fn index() -> String {
 
 #[tokio::main]
 async fn main() {
-    let client_options = ClientOptions::parse("mongodb://oliver:Stoneenge@127.0.0.1:27017").await.unwrap();
+    let config = config::Config::new(String::from("127.0.0.1"), 27017, String::from("oliver"), String::from("Stoneenge"));
+    let auth_string = config.get_auth_string();
+
+    let client_options = ClientOptions::parse(auth_string).await.unwrap();
     let client = Client::with_options(client_options).unwrap();
     let database_name = "blog";
     let collection_name = "users";
