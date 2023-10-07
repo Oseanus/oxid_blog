@@ -8,3 +8,6 @@ edition = "2021"
 [dependencies]
 axum = "0.6.20"
 tokio = { version = "1.32.0", features = ["full"] }
+askama = "0.12.0"
+tower-http = { version = "0.4.3", features = ["full"]}
+mongodb = "2.6.1"
