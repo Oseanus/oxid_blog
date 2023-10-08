@@ -27,10 +27,11 @@ async fn main() {
 
     match user {
         Ok(document) => println!("{}", document),
-        Err(e) => println!("No document found."),
+        Err(_) => println!("No document found."),
     }
 
-    let app = Router::new().route("/", get(index));
+    let app = Router::new()
+                            .route("/", get(index));
 
     let addr = SocketAddr::from(([127, 0, 0, 1], 3000));
     println!("[+] Listening on {}", addr);
