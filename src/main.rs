@@ -49,11 +49,6 @@ async fn get_document(client: &Client, database_name: &str, collection_name: &st
     let database = client.database(database_name);
     let collection = database.collection::<Document>(collection_name);
     let result = collection.find_one(filter, None).await.unwrap();
-
-    // match result {
-    //     Some(document) => println!("{}", document),
-    //     None => println!("No document found."),
-    // }
-
+    
     result
 }
