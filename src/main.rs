@@ -1,8 +1,10 @@
 extern crate mongodb;
 
 mod config;
+mod errors;
 
 use axum::{ routing::get, Router };
+use errors::CustomError;
 use mongodb::{ Client, options::ClientOptions, bson::{doc, Document} };
 use std::net::SocketAddr;
 
@@ -24,8 +26,8 @@ async fn main() {
     let user = get_document(&client, database_name, collection_name, filter).await;
 
     match user {
-        Some(document) => println!("{}", document),
-        None => println!("No document found."),
+        Ok(document) => println!("{}", document),
+        Err(e) => println!("No document found."),
     }
 
     let app = Router::new().route("/", get(index));
@@ -45,10 +47,10 @@ async fn insert_document(client: &Client, database_name: &str, collection_name: 
     collection.insert_one(document, None).await.unwrap();
 }
 
-async fn get_document(client: &Client, database_name: &str, collection_name: &str, filter: Document) -> Option<Document> {
+async fn get_document(client: &Client, database_name: &str, collection_name: &str, filter: Document) -> Result<Document, CustomError> {
     let database = client.database(database_name);
     let collection = database.collection::<Document>(collection_name);
     let result = collection.find_one(filter, None).await.unwrap();
-    
-    result
+
+    result.ok_or_else(|| CustomError::Database("Error: Failed to get document from database.".to_string()))
 }
