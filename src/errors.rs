@@ -5,7 +5,7 @@ use axum::{
     response::{IntoResponse, Response},
 };
 use std::fmt;
-use mongodb::error;
+use mongodb::error::Error;
 
 #[derive(Debug)]
 pub enum CustomError {
@@ -41,5 +41,11 @@ impl IntoResponse for CustomError {
 impl From<axum::http::uri::InvalidUri> for CustomError {
     fn from(err: axum::http::uri::InvalidUri) -> CustomError {
         CustomError::FaultySetup(err.to_string())
+    }
+}
+
+impl From<Error> for CustomError {
+    fn from(err: Error) -> CustomError {
+        CustomError::Database(err.to_string())
     }
 }
