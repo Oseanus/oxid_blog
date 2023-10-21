@@ -3,13 +3,13 @@ extern crate mongodb;
 mod config;
 mod errors;
 
-use axum::{ routing::get, Router };
+use axum::{ routing::get, Router, response::Html };
 use errors::CustomError;
 use mongodb::{ Client, options::ClientOptions, bson::{doc, Document} };
 use std::net::SocketAddr;
 
-async fn index() -> String {
-    String::from("Oxid Blog")
+async fn index() -> Html<&'static str> {
+    Html("Oxid Blog")
 }
 
 #[tokio::main]
