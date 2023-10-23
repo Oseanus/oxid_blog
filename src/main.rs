@@ -1,15 +1,40 @@
 extern crate mongodb;
-
 mod config;
 mod errors;
 
-use axum::{ routing::get, Router, response::Html };
-use errors::CustomError;
+use axum::{ routing::get, Router, response::{Html, IntoResponse}, http::StatusCode };
 use mongodb::{ Client, options::ClientOptions, bson::{doc, Document} };
+use askama::Template;
+use serde::Serialize;
+use errors::CustomError;
 use std::net::SocketAddr;
 
-async fn index() -> Html<&'static str> {
-    Html("Oxid Blog")
+#[derive(Template)]
+#[template(path = "users.html")]
+struct User<'a> {
+    title: String,
+    name: &'a str,
+    email: &'a str
+}
+
+// async fn index() -> Html<&'static str> {
+//     Html("Oxid Blog")
+// }
+
+async fn index() -> impl IntoResponse {
+    let template = User {
+        title: String::from("Users"),
+        name : "Oliver",
+        email: "ellis.oliver@gmail.com"
+    };
+
+    match template.render() {
+        Ok(html) => Html(html).into_response(),
+        Err(err) => (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            format!("Failed to render template. Error {}", err),
+        ).into_response(),
+    }
 }
 
 #[tokio::main]
