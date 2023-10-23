@@ -10,5 +10,5 @@ axum = "0.6.20"
 tokio = { version = "1.32.0", features = ["full"] }
 tower-http = { version = "0.4.3", features = ["full"]}
 mongodb = "2.6.1"
-minijinja = "1.0.9"
 serde = "1.0.189"
+askama = "0.12.1"
