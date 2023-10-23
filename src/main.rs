@@ -2,7 +2,7 @@ extern crate mongodb;
 mod config;
 mod errors;
 
-use axum::{ routing::get, Router, response::{Html, IntoResponse}, http::StatusCode, extract::{ State } };
+use axum::{ routing::get, Router, response::{Html, IntoResponse}, http::StatusCode, extract::State };
 use mongodb::{ Client, options::ClientOptions, bson::{doc, Document} };
 use askama::Template;
 use errors::CustomError;
