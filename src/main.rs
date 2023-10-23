@@ -17,15 +17,23 @@ struct User<'a> {
     email: &'a str
 }
 
-// async fn index() -> Html<&'static str> {
-//     Html("Oxid Blog")
-// }
-
 async fn index() -> impl IntoResponse {
+    let config = config::Config::new(String::from("127.0.0.1"), 27017, String::from("oliver"), String::from("Stoneenge"));
+    let auth_string = config.get_auth_string();
+
+    let client_options = ClientOptions::parse(auth_string).await.unwrap();
+    let client = Client::with_options(client_options).unwrap();
+    let database_name = "blog";
+    let collection_name = "users";
+    let filter = doc! {"name": "Oliver"};
+
+    let user_doc = get_document(&client, database_name, collection_name, filter).await;
+    let user = user_doc.unwrap();
+
     let template = User {
         title: String::from("Users"),
-        name : "Oliver",
-        email: "ellis.oliver@gmail.com"
+        name : user.get("name").unwrap().as_str().unwrap(),
+        email: user.get("email").unwrap().as_str().unwrap()
     };
 
     match template.render() {
@@ -39,22 +47,6 @@ async fn index() -> impl IntoResponse {
 
 #[tokio::main]
 async fn main() {
-    let config = config::Config::new(String::from("127.0.0.1"), 27017, String::from("oliver"), String::from("Stoneenge"));
-    let auth_string = config.get_auth_string();
-
-    let client_options = ClientOptions::parse(auth_string).await.unwrap();
-    let client = Client::with_options(client_options).unwrap();
-    let database_name = "blog";
-    let collection_name = "users";
-    let filter = doc! {"name": "Oliver"};
-
-    let user = get_document(&client, database_name, collection_name, filter).await;
-
-    match user {
-        Ok(document) => println!("{}", document),
-        Err(_) => println!("No document found."),
-    }
-
     let app = Router::new()
                             .route("/", get(index));
 
@@ -65,6 +57,12 @@ async fn main() {
         .serve(app.into_make_service())
         .await
         .unwrap();
+}
+
+async fn connect_database(auth_string: String) -> Client {
+    let client_options = ClientOptions::parse(auth_string).await.unwrap();
+    let client = Client::with_options(client_options).unwrap();
+    client
 }
 
 async fn insert_document(client: &Client, database_name: &str, collection_name: &str, document: Document) {
