@@ -2,12 +2,12 @@ extern crate mongodb;
 mod config;
 mod errors;
 
-use axum::{ routing::get, Router, response::{Html, IntoResponse}, http::StatusCode };
+use axum::{ routing::get, Router, response::{Html, IntoResponse}, http::StatusCode, extract::{ State } };
 use mongodb::{ Client, options::ClientOptions, bson::{doc, Document} };
 use askama::Template;
-use serde::Serialize;
 use errors::CustomError;
 use std::net::SocketAddr;
+use std::sync::Arc;
 
 #[derive(Template)]
 #[template(path = "users.html")]
@@ -17,12 +17,9 @@ struct User<'a> {
     email: &'a str
 }
 
-async fn index() -> impl IntoResponse {
-    let config = config::Config::new(String::from("127.0.0.1"), 27017, String::from("oliver"), String::from("Stoneenge"));
-    let auth_string = config.get_auth_string();
+async fn index(State(state): State<Arc<Client>>) -> impl IntoResponse {
+    let client = state.clone();
 
-    let client_options = ClientOptions::parse(auth_string).await.unwrap();
-    let client = Client::with_options(client_options).unwrap();
     let database_name = "blog";
     let collection_name = "users";
     let filter = doc! {"name": "Oliver"};
@@ -47,8 +44,15 @@ async fn index() -> impl IntoResponse {
 
 #[tokio::main]
 async fn main() {
+    let config = config::Config::new(String::from("127.0.0.1"), 27017, String::from("oliver"), String::from("Stoneenge"));
+    let auth_string = config.get_auth_string();
+    let client = connect_database(auth_string).await;
+
+    let shared_state = Arc::new(client);
+
     let app = Router::new()
-                            .route("/", get(index));
+                            .route("/", get(index)
+                            .with_state(shared_state));
 
     let addr = SocketAddr::from(([127, 0, 0, 1], 3000));
     println!("[+] Listening on {}", addr);
