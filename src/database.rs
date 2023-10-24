@@ -1,6 +1,6 @@
 extern crate mongodb;
 
-use mongodb::{ Client, options::ClientOptions, bson::{doc, Document} };
+use mongodb::{ Client, options::ClientOptions, bson::Document };
 use crate::CustomError;
 
 pub async fn connect_database(auth_string: String) -> Client {
