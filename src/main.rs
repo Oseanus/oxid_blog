@@ -3,10 +3,17 @@ mod config;
 mod errors;
 mod database;
 
-use axum::{ routing::get, Router, response::{Html, IntoResponse}, http::StatusCode, extract::State };
+use axum::{ 
+    routing::get,
+    Router, 
+    response::{ Html, IntoResponse },
+    http::StatusCode,
+    extract::State
+};
 use mongodb::{ Client, bson::doc };
 use askama::Template;
 use errors::CustomError;
+use tower_http::services::ServeDir;
 use std::net::SocketAddr;
 use std::sync::Arc;
 
@@ -53,7 +60,8 @@ async fn main() {
 
     let app = Router::new()
                             .route("/", get(index)
-                            .with_state(shared_state));
+                            .with_state(shared_state))
+                            .nest_service("/assets", ServeDir::new("assets"));
 
     let addr = SocketAddr::from(([127, 0, 0, 1], 3000));
     println!("[+] Listening on {}", addr);
