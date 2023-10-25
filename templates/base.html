@@ -9,8 +9,19 @@
     </head>
     
     <body>
-        <section id = "content">
-            {% block content %}{% endblock content %}
-        </section>
+        <header id = "header">
+            <a href = "#" id = "banner">Oxid Blog</a>
+        </header>
+
+        <div id = "main">
+            <section id = "content" class = "content">
+                {% block content %}{% endblock content %}
+            </section>
+
+            <section id = "sidebar" class = "content">Stub</section>
+
+        </div>
+
+        <footer id = "footer">Footer</footer>
     </body>
 </html>

@@ -2,3 +2,42 @@ body
 {
     background: #04496e;
 }
+
+#banner 
+{
+    color: white;
+    font-variant: small-caps;
+    font-weight: bold;
+    font-size: 100px;
+    font-family: Arial Black, sans-serif;
+}
+
+/* Remove underline for all states */
+#banner:link, #banner:visited, #banner:hover, #banner:active
+{
+    text-decoration: none;
+}
+
+#main
+{
+    display: grid;
+    grid-template-areas: 'main main right';
+}
+
+.content
+{
+    background: #818a91;
+    margin: 10px;
+    border-radius: 10px;
+    box-shadow: 5px -5px #323f4a;
+}
+
+#content
+{
+    grid-area: main;
+}
+
+#sidebar
+{
+    grid-area: right;
+}
