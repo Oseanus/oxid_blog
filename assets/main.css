@@ -20,24 +20,10 @@ body
 
 #main
 {
-    display: grid;
-    grid-template-areas: 'main main right';
+    max-width: 1500px;
 }
 
 .content
 {
-    background: #818a91;
-    margin: 10px;
-    border-radius: 10px;
-    box-shadow: 5px -5px #323f4a;
-}
-
-#content
-{
-    grid-area: main;
-}
-
-#sidebar
-{
-    grid-area: right;
+    margin: 5px;
 }
