@@ -25,6 +25,12 @@ struct User<'a> {
     email: &'a str
 }
 
+#[derive(Template)]
+#[template(path = "login.html")]
+struct Login<'a> {
+    title: &'a str,
+}
+
 async fn index(State(state): State<Arc<Client>>) -> impl IntoResponse {
     let client = state.clone();
 
@@ -50,6 +56,20 @@ async fn index(State(state): State<Arc<Client>>) -> impl IntoResponse {
     }
 }
 
+async fn login() -> impl IntoResponse {
+    let template = Login {
+        title: "Login",
+    };
+
+    match template.render() {
+        Ok(html) => Html(html).into_response(),
+        Err(err) => (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            format!("Failed to render template. Error {}", err)
+        ).into_response(),
+    }
+}
+
 #[tokio::main]
 async fn main() {
     let config = config::Config::new(String::from("127.0.0.1"), 27017, String::from("oliver"), String::from("Stoneenge"));
@@ -61,6 +81,7 @@ async fn main() {
     let app = Router::new()
                             .route("/", get(index)
                             .with_state(shared_state))
+                            .route("/login", get(login))
                             .nest_service("/assets", ServeDir::new("assets"));
 
     let addr = SocketAddr::from(([127, 0, 0, 1], 3000));
